@@ -1,0 +1,34 @@
+#include "lib/hiolib.hasm"
+#include "lib/string.hasm"
+
+#include "kernel.hasm"
+#include "shell.hasm"
+
+.entry _start
+
+_start:
+    call initKern
+
+    ; OS
+    push welcome
+    call putstr
+
+    osloop:
+        call shell
+
+        jmp osLoop
+
+    ; --
+
+    exit
+
+.data
+welcome: db "Welcome to SYSDOS!\n"
+shellWelcome: db "Welcome to SYSSH!\n"
+prompt: db ">> "
+command: db "Command not found: "
+
+_exit: db "exit"
+_shutdown: db "shutdown"
+_restart: db "restart"
+_cls: db "cls"

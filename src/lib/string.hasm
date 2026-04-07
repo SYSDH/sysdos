@@ -1,0 +1,102 @@
+strlen:
+    store 9000, li
+    store 9004, h
+    store 9008, c
+
+    pop li
+    pop c
+
+    mov h, 0
+
+    __strlenLoop__:
+        load $c, he
+        jz he, __strlenEnd__
+        
+        add h, 1
+        add c, 4
+
+        jmp __strlenLoop__
+
+
+    __strlenEnd__:
+        push $h
+        push $li
+
+        load 9000, li
+        load 9004, h
+        load 9008, c
+ret
+
+strcmp:
+    store 9000, li
+    store 9004, h
+    store 9008, c
+    store 9012, o
+    store 9016, he
+    store 9020, be
+    
+    pop li
+    pop c
+    pop o
+    
+    mov h, 1
+
+    __strcmpLoop__:
+        load $c, he
+        load $o, be
+
+        jz he, __strcmpEnd__
+        jz be, __strcmpEnd__
+        
+        sub he, be
+        jnz he, __strcmpfalse__
+        add he, be
+
+        add c, 4
+        add o, 4
+
+        jmp __strcmpLoop__
+
+    __strcmpfalse__:
+        mov h, 0
+        jmp __strcmpEnd__
+
+
+    __strcmpEnd__:
+        push $h
+        push $li
+
+        load 9000, li
+        load 9004, h
+        load 9008, c
+        load 9012, o
+        load 9016, he
+        load 9020, be
+ret
+
+stackcpy:
+    store 9000, he
+    store 9004, li
+    store 9008, be
+
+    pop he
+    pop be
+    pop li
+
+    __copy_loop__:
+        store $be, li
+
+        jz li, __copy_done__
+        add be, 4
+
+        pop li
+
+        jmp __copy_loop__
+
+    __copy_done__:
+        push $he
+        
+        load 9000, he
+        load 9004, li
+        load 9008, be
+ret

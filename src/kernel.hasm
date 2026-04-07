@@ -1,0 +1,118 @@
+#include "lib/hiolib.hasm"
+
+; ---------------------------------------------------------
+; Memory Plan
+; Ram Size: 65.536
+;
+; [0 - 8.191]         Kernel & OS Binary (Code area) - 8KB
+; [8.192 - 9.000]     KernelLib utils (Reg backups for libs)
+; [9.001 - 9.999]     Kernel utils (Reg backups for kalloc/panic)
+;
+; [10.000 - 30.000]   OS Dynamic Area (Heap / Kalloc Zone) - 20KB
+; [30.001 - 55.296]   Disk Buffer Area - 25KB
+; [55.297 - 65.536]   System Stack (Hardware Pb) - 10KB
+;
+; Kernel Specials (Fixed Addresses):
+; 8.192 = Heap pointer (32-bit)
+; 8.196 = ErrorCode    (32-bit)
+; ---------------------------------------------------------
+initKern:
+    mov c, 10000
+    store 8192, c
+ret
+
+kalloc:
+    ; Setup
+    store 9000, li
+    store 9004, c
+    store 9008, he
+    
+    pop li
+    pop c
+    ; ---
+
+    ; Calculate
+    load 9000, he
+
+    add c, he
+
+    ; Overflow check
+    sub c, 12228
+    jz c, __kallocoverflow__
+    add c, 12228
+
+    ; Save pointer
+    store 8192, c
+    ; ---
+    
+    ; Finish setup
+
+    push $he
+    
+    push $li
+    load 9000, li
+    load 9004, c
+    load 9008, he
+ret
+
+kfree:
+    ; Setup
+    store 9000, li
+    store 9004, c
+    store 9008, he
+    
+    pop li
+    pop c
+    ; ---
+
+    ; Calculate
+    load 9000, he
+
+    sub c, he
+
+    ; Underflow check
+    add c, c
+    jz c, __kallocunderflow__
+    sub c, c
+
+    ; Save pointer
+    store 8192, c
+    ; ---
+    
+    ; Finish setup
+    
+    push $li
+    load 9000, li
+    load 9004, c
+    load 9008, he
+ret
+
+__kallocoverflow__:
+    mov h, 8
+    store 8196, h
+    jmp kernelPanic
+
+__kallocunderflow__:
+    mov h, -8
+    store 8196, h
+    jmp kernelPanic
+
+kernelPanic:
+    push kernelPanic_StartMsg
+    call putstr
+
+    load 8196, h
+
+    push $h
+    call putnum
+
+    push kernelPanic_endMsg
+    call putstr
+
+    call _dbg_putreg
+
+    exit
+
+.data
+    kernelPanic_StartMsg: db "\n[KERNEL]: fatal error, last error code <00"
+    kernelPanic_endMsg: db ">\n\nDebug: "

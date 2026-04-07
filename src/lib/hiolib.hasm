@@ -1,0 +1,78 @@
+putchar:
+    store 9000, he
+    store 9004, li
+
+    pop he
+    pop li
+
+    out $li, 1
+
+    push $he  
+
+    load 9000, he
+    load 9004, li
+ret
+
+putnum:
+    store 9000, he
+    store 9004, li
+
+    pop he
+    pop li
+
+    out $li, 0
+
+    push $he  
+
+    load 9000, he
+    load 9004, li
+ret
+
+putstr:
+    store 9000, li
+    store 9004, he
+    store 9008, c
+
+    pop c
+    pop li
+    
+    __putstrloop__:
+        load $li, $he
+        jz he, __putstrend__
+        
+        out $he, 1
+        add li, 4
+        jmp __putstrloop__
+
+    __putstrend__:
+        push $c
+
+        load 9000, li
+        load 9004, he
+        load 9008, c
+ret
+
+_dbg_putreg:
+    out $h, 0
+    out 32, 1
+
+    out $he, 0
+    out 32, 1
+
+    out $li, 0
+    out 32, 1
+    
+    out $be, 0
+    out 32, 1
+
+    out $b, 0
+    out 32, 1
+
+    out $c, 0
+    out 32, 1
+    
+    out $n, 0
+    out 32, 1
+    
+    out $o, 0
+ret
