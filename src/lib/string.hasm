@@ -1,7 +1,7 @@
 strlen:
-    store 9000, li
-    store 9004, h
-    store 9008, c
+    store 66001, li
+    store 66005, h
+    store 66009, c
 
     pop li
     pop c
@@ -22,31 +22,33 @@ strlen:
         push $h
         push $li
 
-        load 9000, li
-        load 9004, h
-        load 9008, c
+        load 66001, li
+        load 66005, h
+        load 66009, c
 ret
 
 strcmp:
-    store 9000, li
-    store 9004, h
-    store 9008, c
-    store 9012, o
-    store 9016, he
-    store 9020, be
+    store 66001, li
+    store 66005, h
+    store 66009, c
+    store 66013, o
+    store 66017, he
+    store 66021, be
     
     pop li
     pop c
     pop o
     
     mov h, 1
+    mov he, 0
+    mov be, 0
 
     __strcmpLoop__:
         load $c, he
         load $o, be
 
-        jz he, __strcmpEnd__
-        jz be, __strcmpEnd__
+        jz he, __checkbe__
+        jz be, __checkhe__
         
         sub he, be
         jnz he, __strcmpfalse__
@@ -61,42 +63,91 @@ strcmp:
         mov h, 0
         jmp __strcmpEnd__
 
+    __checkbe__:
+        jz be, __strcmpEnd__
+        jmp __strcmpfalse__
+
+    __checkhe__:
+        jz he, __strcmpEnd__
+        jmp __strcmpfalse__
+
 
     __strcmpEnd__:
         push $h
         push $li
 
-        load 9000, li
-        load 9004, h
-        load 9008, c
-        load 9012, o
-        load 9016, he
-        load 9020, be
+        load 66001, li
+        load 66005, h
+        load 66009, c
+        load 66013, o
+        load 66017, he
+        load 66021, be
 ret
 
 stackcpy:
-    store 9000, he
-    store 9004, li
-    store 9008, be
+    store 66001, he
+    store 66005, li
+    store 66009, be
 
     pop he
     pop be
-    pop li
 
     __copy_loop__:
+        pop li
+
         store $be, li
 
         jz li, __copy_done__
         add be, 4
-
-        pop li
 
         jmp __copy_loop__
 
     __copy_done__:
         push $he
         
-        load 9000, he
-        load 9004, li
-        load 9008, be
+        load 66001, he
+        load 66005, li
+        load 66009, be
+ret
+
+strbuild:
+    store 66300, h
+    store 66304, he
+    store 66308, li
+    store 66312, be
+    store 66316, c
+
+    pop li
+    pop be
+    pop c
+    pop h
+
+    __build_copy_p__:
+        load $c, he
+        jz he, __build_copy_s_init__
+        store $h, he
+        add c, 4
+        add h, 4
+        jmp __build_copy_p__
+
+    __build_copy_s_init__:
+    __build_copy_s__:
+        load $be, he
+        jz he, __build_done__
+        store $h, he
+        add be, 4
+        add h, 4
+        jmp __build_copy_s__
+
+    __build_done__:
+        mov he, 0
+        store $h, he
+
+        push $li
+
+        load 66300, h
+        load 66304, he
+        load 66308, li
+        load 66312, be
+        load 66316, c
 ret

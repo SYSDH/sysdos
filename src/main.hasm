@@ -3,6 +3,7 @@
 
 #include "kernel.hasm"
 #include "shell.hasm"
+#include "loader.hasm"
 
 .entry _start
 
@@ -23,12 +24,4 @@ _start:
     exit
 
 .data
-welcome: db "Welcome to SYSDOS!\n"
-shellWelcome: db "Welcome to SYSSH!\n"
-prompt: db ">> "
-command: db "Command not found: "
-
-_exit: db "exit"
-_shutdown: db "shutdown"
-_restart: db "restart"
-_cls: db "cls"
+    welcome: db "Welcome to SYSDOS!\n"

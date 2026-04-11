@@ -6,12 +6,12 @@ shell:
         jmp loop
 
     shutdown:
-        push 256
+        push 1024
         call kfree
         exit
     
     restart:
-        push 256
+        push 1024
         call kfree
         jmp _start
 
@@ -30,9 +30,14 @@ shell:
         out 51, 1
         out 74, 1
 
-        push 256
+        push 1024
         call kfree
 
+        jmp loop
+
+    loaderTrue:
+        push 1024
+        call kfree
         jmp loop
 
     check:
@@ -66,6 +71,25 @@ shell:
         pop o
 
         jnz o, cls
+
+        ; Check path
+        push 1024
+        call kalloc
+        pop o
+
+        push $o
+        push path
+        push $h
+        call strbuild
+
+        push $o
+        call loader
+        pop o
+
+        push 1024
+        call kfree
+
+        jnz o, loaderTrue
         
         ; Command not found
         push command
@@ -76,7 +100,7 @@ shell:
 
         out 10, 1
         
-        push 256
+        push 1024
         call kfree
 
         jmp loop
@@ -94,7 +118,7 @@ shell:
         push $h
 
         ; Reserve input memory
-        push 256
+        push 1024
         call kalloc
         pop h
 
@@ -104,4 +128,21 @@ shell:
         jmp check
 
     end:
+        push 1024
+        call kfree
 ret
+
+.data
+    ; Messages
+    shellWelcome: db "Welcome to SYSSH!\n"
+    prompt: db ">> "
+    command: db "Command not found: "
+
+    ; Commands
+    _exit: db "exit"
+    _shutdown: db "shutdown"
+    _restart: db "restart"
+    _cls: db "cls"
+
+    ; System
+    path: db "./sysdos/bin/"

@@ -1,48 +1,51 @@
 #include "lib/hiolib.hasm"
 
-; ---------------------------------------------------------
+; -------------------------------------------------------------------
 ; Memory Plan
-; Ram Size: 65.536
+; Ram Size: 1.048.576
 ;
-; [0 - 8.191]         Kernel & OS Binary (Code area) - 8KB
-; [8.192 - 9.000]     KernelLib utils (Reg backups for libs)
-; [9.001 - 9.999]     Kernel utils (Reg backups for kalloc/panic)
+; [0 - 65.535]               Kernel & OS Binary (Code area) - 64KB
+; [65.536 - 66.000]          KernelLib utils (Reg backups for libs)
+; [66.001 - 69.999]          Kernel utils (Reg backups for kalloc/panic)
 ;
-; [10.000 - 30.000]   OS Dynamic Area (Heap / Kalloc Zone) - 20KB
-; [30.001 - 55.296]   Disk Buffer Area - 25KB
-; [55.297 - 65.536]   System Stack (Hardware Pb) - 10KB
+; [70.000 - 800.000]         OS Dynamic Area (Heap / Kalloc Zone) - 730KB
+; [800.001 - 999.964]        Disk Buffer Area - 199.964 bytes
+; [999.965 - 1.000.000]      Loader Register Save Area - 36 bytes
+; [1.000.001 - 1.048.576]    System Stack (Hardware Pb) - 48KB
 ;
 ; Kernel Specials (Fixed Addresses):
-; 8.192 = Heap pointer (32-bit)
-; 8.196 = ErrorCode    (32-bit)
-; ---------------------------------------------------------
+; 65.536 = Heap pointer (32-bit)
+; 65.540 = ErrorCode    (32-bit)
+; -------------------------------------------------------------------
+
 initKern:
-    mov c, 10000
-    store 8192, c
+    mov c, 70000
+    store 65536, c
 ret
 
 kalloc:
     ; Setup
-    store 9000, li
-    store 9004, c
-    store 9008, he
+    store 66001, li
+    store 66005, c
+    store 66009, he
     
     pop li
     pop c
     ; ---
 
     ; Calculate
-    load 9000, he
+    load 65536, he
 
     add c, he
 
     ; Overflow check
-    sub c, 12228
-    jz c, __kallocoverflow__
-    add c, 12228
+    store 66013, c ; Backup pointer
+    sub c, 800000
+    jge c, __kallocoverflow__
+    load 66013, c ; Restore pointer
 
     ; Save pointer
-    store 8192, c
+    store 65536, c
     ; ---
     
     ; Finish setup
@@ -50,58 +53,59 @@ kalloc:
     push $he
     
     push $li
-    load 9000, li
-    load 9004, c
-    load 9008, he
+    load 66001, li
+    load 66005, c
+    load 66009, he
 ret
 
 kfree:
     ; Setup
-    store 9000, li
-    store 9004, c
-    store 9008, he
+    store 66001, li
+    store 66005, c
+    store 66009, he
     
     pop li
     pop c
     ; ---
 
     ; Calculate
-    load 9000, he
+    load 65536, he
 
-    sub c, he
+    sub he, c
 
     ; Underflow check
-    add c, c
-    jz c, __kallocunderflow__
-    sub c, c
+    store 66013, he ; Backup pointer
+    sub he, 70000
+    jl he, __kfreeunderflow__
+    load 66013, he ; Restore pointer
 
     ; Save pointer
-    store 8192, c
+    store 65536, he
     ; ---
     
     ; Finish setup
     
     push $li
-    load 9000, li
-    load 9004, c
-    load 9008, he
+    load 66001, li
+    load 66005, c
+    load 66009, he
 ret
 
 __kallocoverflow__:
     mov h, 8
-    store 8196, h
+    store 65540, h
     jmp kernelPanic
 
-__kallocunderflow__:
-    mov h, -8
-    store 8196, h
+__kfreeunderflow__:
+    mov h, 16
+    store 65540, h
     jmp kernelPanic
 
 kernelPanic:
     push kernelPanic_StartMsg
     call putstr
 
-    load 8196, h
+    load 65540, h
 
     push $h
     call putnum
@@ -114,5 +118,5 @@ kernelPanic:
     exit
 
 .data
-    kernelPanic_StartMsg: db "\n[KERNEL]: fatal error, last error code <00"
+    kernelPanic_StartMsg: db "\n[KERNEL]: fatal error, last error code <"
     kernelPanic_endMsg: db ">\n\nDebug: "

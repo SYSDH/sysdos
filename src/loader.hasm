@@ -1,0 +1,73 @@
+loader:
+    store 999965, h
+    store 999969, he
+    store 999973, li
+    store 999977, be
+    store 999981, b
+    store 999985, c
+    store 999989, n
+    store 999993, o
+
+    pop li
+
+    store 999997, li
+
+    pop h
+
+    mov o, 800000
+
+    loadf $h, $o, h, 0
+
+    jl h, loaderError
+    
+    load 800000, h
+
+    sub h, 3301
+    jnz h, invalidFormat_loader
+
+    ; Reset Registers
+    mov h , 0
+    mov he, 0
+    mov li, 0
+    mov be, 0
+    mov b , 0
+    mov c , 0
+    mov n , 0
+    mov o , 0
+    ; -----
+    
+    call 800004 ; Call the program
+
+    jmp loaderOkay
+
+    invalidFormat_loader:
+        push invalidformatMessage
+        call putstr
+
+        jmp loaderOkay ; Hack to not show "command not found"
+
+    loaderError:
+        push 0
+        jmp loaderEnd
+
+    loaderOkay:
+        push 1
+        jmp loaderEnd
+
+    loaderEnd:
+        load 999997, li
+        push $li
+
+        load 999965, h
+        load 999969, he
+        load 999973, li
+        load 999977, be
+        load 999981, b
+        load 999985, c
+        load 999989, n
+        load 999993, o
+
+ret
+
+.data
+    invalidformatMessage: db "invalid format: missing magic number 3301\n"

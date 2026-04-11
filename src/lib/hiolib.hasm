@@ -1,6 +1,6 @@
 putchar:
-    store 9000, he
-    store 9004, li
+    store 66001, he
+    store 66005, li
 
     pop he
     pop li
@@ -9,13 +9,13 @@ putchar:
 
     push $he  
 
-    load 9000, he
-    load 9004, li
+    load 66001, he
+    load 66005, li
 ret
 
 putnum:
-    store 9000, he
-    store 9004, li
+    store 66001, he
+    store 66005, li
 
     pop he
     pop li
@@ -24,14 +24,14 @@ putnum:
 
     push $he  
 
-    load 9000, he
-    load 9004, li
+    load 66001, he
+    load 66005, li
 ret
 
 putstr:
-    store 9000, li
-    store 9004, he
-    store 9008, c
+    store 66001, li
+    store 66005, he
+    store 66009, c
 
     pop c
     pop li
@@ -47,9 +47,9 @@ putstr:
     __putstrend__:
         push $c
 
-        load 9000, li
-        load 9004, he
-        load 9008, c
+        load 66001, li
+        load 66005, he
+        load 66009, c
 ret
 
 _dbg_putreg:
