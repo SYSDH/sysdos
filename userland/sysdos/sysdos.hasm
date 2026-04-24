@@ -1,0 +1,71 @@
+%macro SYSCALL push %0 call syscall
+
+%macro __SYSCALL_KALLOC__IDX__     65536
+%macro __SYSCALL_KFREE__IDX__      65541
+
+%macro __SYSCALL_PUTSTR__IDX__     65546
+%macro __SYSCALL_STRCMP__IDX__     65551
+%macro __SYSCALL_STACKCPY__IDX__   65556
+
+%macro kalloc 0
+%macro kfree 1
+%macro putstr 2
+%macro strcmp 3
+%macro stackcpy 4
+
+syscall:
+    init:
+        store 840008, h
+        store 840012, li
+        
+        pop li
+        pop h
+
+        jz h, __syscall_kalloc__module__
+
+        sub h, %kfree
+        jz h, __syscall_kfree__module__
+        add h, %kfree
+
+        sub h, %putstr
+        jz h, __syscall_putstr__module__
+        add h, %putstr
+
+        sub h, %strcmp
+        jz h, __syscall_strcmp__module__
+        add h, %strcmp
+
+        sub h, %stackcpy
+        jz h, __syscall_stackcpy__module__
+        add h, %stackcpy
+
+        jmp __syscall_end__module__
+
+    __syscall_kalloc__module__:
+        call %__SYSCALL_KALLOC__IDX__
+        jmp __syscall_end__module__
+
+    __syscall_kfree__module__:
+        call %__SYSCALL_KFREE__IDX__
+        jmp __syscall_end__module__
+
+    __syscall_putstr__module__:
+        call %__SYSCALL_PUTSTR__IDX__
+        jmp __syscall_end__module__
+
+    __syscall_strcmp__module__:
+        call %__SYSCALL_STRCMP__IDX__
+        jmp __syscall_end__module__
+
+    __syscall_stackcpy__module__:
+        call %__SYSCALL_STACKCPY__IDX__
+        jmp __syscall_end__module__
+
+
+    __syscall_end__module__:
+        push $li
+
+        load 840008, h
+        load 840012, li
+
+ret

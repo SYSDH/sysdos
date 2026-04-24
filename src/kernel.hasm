@@ -2,24 +2,28 @@
 
 ; -------------------------------------------------------------------
 ; Memory Plan
-; Ram Size: 1.048.576
+; Ram Size: 1.048.576 bytes
 ;
 ; [0 - 65.535]               Kernel & OS Binary (Code area) - 64KB
-; [65.536 - 66.000]          KernelLib utils (Reg backups for libs)
-; [66.001 - 69.999]          Kernel utils (Reg backups for kalloc/panic)
+; [65.536 - 67.583]          SYSCALL JUMP TABLE (Jump Area) - 2KB
+; [67.584 - 68.500]          KernelLib utils (Reg backups for libs)
+; [68.501 - 69.991]          Kernel utils (Reg backups for kalloc/panic)
+; [69.992 - 70.000]          Kernel Specials (Fixed Area) - 8 bytes
 ;
 ; [70.000 - 800.000]         OS Dynamic Area (Heap / Kalloc Zone) - 730KB
-; [800.001 - 999.964]        Disk Buffer Area - 199.964 bytes
+; [800.001 - 999.964]        Disk Buffer Area (Loader Destination) - 199.964 bytes
 ; [999.965 - 1.000.000]      Loader Register Save Area - 36 bytes
 ; [1.000.001 - 1.048.576]    System Stack (Hardware Pb) - 48KB
 ;
 ; Kernel Specials (Fixed Addresses):
-; 65.536 = Heap pointer (32-bit)
-; 65.540 = ErrorCode    (32-bit)
+; 69.992 = Heap pointer (32-bit)
+; 69.996 = ErrorCode    (32-bit)
 ; -------------------------------------------------------------------
 
-%macro heapPtr 65536
-%macro errorcode 65540
+%macro heapPtr 69992
+%macro errorcode 69996
+
+%macro JMP_OPCODE 50
 
 ; Os area
 %macro osmaxlimit 800000
@@ -37,8 +41,41 @@
 }
 
 initKern:
+    ; Configure the heap pointer
     mov c, 70000
     store %heapPtr, c
+
+    ; Configure syscalls
+
+    ; Kalloc
+    mov c, %JMP_OPCODE
+    store 65536, c
+    mov c, kalloc
+    store 65537, c
+
+    ; Kfree
+    mov c, %JMP_OPCODE
+    store 65541, c
+    mov c, kfree
+    store 65542, c
+
+    ; Putstr
+    mov c, %JMP_OPCODE
+    store 65546, c
+    mov c, putstr
+    store 65547, c
+
+    ; Strcmp
+    mov c, %JMP_OPCODE
+    store 65551, c
+    mov c, strcmp
+    store 65552, c
+
+    ; Stackcpy
+    mov c, %JMP_OPCODE
+    store 65556, c
+    mov c, stackcpy
+    store 65557, c
 ret
 
 kalloc:
