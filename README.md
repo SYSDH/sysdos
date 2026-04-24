@@ -82,23 +82,23 @@ sysvm sysdos.bin
 ### ⚙️ Kernel
 The kernel is the system's core, responsible for low-level memory management and hardware abstraction.
 
-```text
---------------------------------------------
-Memory Plan (RAM Size: 1,048,576 bytes)
-
-[0 - 65,535]               Kernel & OS Binary (Code area) - 64KB
-[65,536 - 66,000]          KernelLib Utils (Reg backups for libs)
-[66,001 - 69,999]          Kernel Utils (Reg backups for kalloc/panic)
-
-[70,000 - 800,000]         OS Dynamic Area (Heap / Kalloc Zone) - 730KB
-[800,001 - 999,964]        Disk Buffer Area - 199,964 bytes
-[999,965 - 1,000,000]      Loader Register Save Area - 36 bytes
-[1,000,001 - 1,048,576]    System Stack (Hardware Pb) - 48KB
-
-Fixed Kernel Addresses:
-65,536 = Heap Pointer (32-bit)
-65,540 = Error Code   (32-bit)
---------------------------------------------
+```asm
+; --------------------------------------------
+; Memory Plan (RAM Size: 1,048,576 bytes)
+;
+; [0 - 65,535]               Kernel & OS Binary (Code area) - 64KB
+; [65,536 - 66,000]          KernelLib Utils (Reg backups for libs)
+; [66,001 - 69,999]          Kernel Utils (Reg backups for kalloc/panic)
+;
+; [70,000 - 800,000]         OS Dynamic Area (Heap / Kalloc Zone) - 730KB
+; [800,001 - 999,964]        Disk Buffer Area - 199,964 bytes
+; [999,965 - 1,000,000]      Loader Register Save Area - 36 bytes
+; [1,000,001 - 1,048,576]    System Stack (Hardware Pb) - 48KB
+;
+; Fixed Kernel Addresses:
+; 65,536 = Heap Pointer (32-bit)
+; 65,540 = Error Code   (32-bit)
+; --------------------------------------------
 ```
 
 #### 🚨 Error Codes & Panic
