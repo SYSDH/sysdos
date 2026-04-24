@@ -1,3 +1,5 @@
+%macro inputBuffer 1024
+
 shell:
     init:
         push shellWelcome
@@ -6,13 +8,11 @@ shell:
         jmp loop
 
     shutdown:
-        push 1024
-        call kfree
+        %kfree %inputBuffer
         exit
     
     restart:
-        push 1024
-        call kfree
+        %kfree %inputBuffer
         jmp _start
 
     cls:
@@ -29,15 +29,13 @@ shell:
         out 91, 1
         out 51, 1
         out 74, 1
-
-        push 1024
-        call kfree
+        
+        %kfree %inputBuffer
 
         jmp loop
 
     loaderTrue:
-        push 1024
-        call kfree
+        %kfree %inputBuffer
         jmp loop
 
     check:
@@ -73,9 +71,7 @@ shell:
         jnz o, cls
 
         ; Check path
-        push 1024
-        call kalloc
-        pop o
+        %kalloc %inputBuffer o
 
         push $o
         push path
@@ -86,8 +82,7 @@ shell:
         call loader
         pop o
 
-        push 1024
-        call kfree
+        %kfree %inputBuffer
 
         jnz o, loaderTrue
         
@@ -100,8 +95,7 @@ shell:
 
         out 10, 1
         
-        push 1024
-        call kfree
+        %kfree %inputBuffer
 
         jmp loop
 
@@ -118,9 +112,7 @@ shell:
         push $h
 
         ; Reserve input memory
-        push 1024
-        call kalloc
-        pop h
+        %kalloc %inputBuffer h
 
         push $h
         call stackcpy
@@ -128,8 +120,7 @@ shell:
         jmp check
 
     end:
-        push 1024
-        call kfree
+        %kfree %inputBuffer
 ret
 
 .data

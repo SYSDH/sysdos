@@ -18,9 +18,27 @@
 ; 65.540 = ErrorCode    (32-bit)
 ; -------------------------------------------------------------------
 
+%macro heapPtr 65536
+%macro errorcode 65540
+
+; Os area
+%macro osmaxlimit 800000
+%macro osminlimit 70000
+
+%macro kalloc {
+    push %0
+    call kalloc
+    pop %1
+}
+
+%macro kfree {
+    push %0
+    call kfree
+}
+
 initKern:
     mov c, 70000
-    store 65536, c
+    store %heapPtr, c
 ret
 
 kalloc:
@@ -34,18 +52,18 @@ kalloc:
     ; ---
 
     ; Calculate
-    load 65536, he
+    load %heapPtr, he
 
     add c, he
 
     ; Overflow check
     store 66013, c ; Backup pointer
-    sub c, 800000
+    sub c, %osmaxlimit
     jge c, __kallocoverflow__
     load 66013, c ; Restore pointer
 
     ; Save pointer
-    store 65536, c
+    store %heapPtr, c
     ; ---
     
     ; Finish setup
@@ -69,18 +87,18 @@ kfree:
     ; ---
 
     ; Calculate
-    load 65536, he
+    load %heapPtr, he
 
     sub he, c
 
     ; Underflow check
     store 66013, he ; Backup pointer
-    sub he, 70000
+    sub he, %osminlimit
     jl he, __kfreeunderflow__
     load 66013, he ; Restore pointer
 
     ; Save pointer
-    store 65536, he
+    store %heapPtr, he
     ; ---
     
     ; Finish setup
@@ -93,19 +111,19 @@ ret
 
 __kallocoverflow__:
     mov h, 8
-    store 65540, h
+    store %errorcode, h
     jmp kernelPanic
 
 __kfreeunderflow__:
     mov h, 16
-    store 65540, h
+    store %errorcode, h
     jmp kernelPanic
 
 kernelPanic:
     push kernelPanic_StartMsg
     call putstr
 
-    load 65540, h
+    load %errorcode, h
 
     push $h
     call putnum

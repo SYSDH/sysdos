@@ -1,12 +1,25 @@
+%macro loadProgramcallidx 800004
+%macro loadProgramidx 800000
+
+; Reg save index
+%macro hSave  999965
+%macro heSave 999969
+%macro liSave 999973
+%macro beSave 999977
+%macro bSave  999981
+%macro cSave  999985
+%macro nSave  999989
+%macro oSave  999993
+
 loader:
-    store 999965, h
-    store 999969, he
-    store 999973, li
-    store 999977, be
-    store 999981, b
-    store 999985, c
-    store 999989, n
-    store 999993, o
+    store %hSave, h
+    store %heSave, he
+    store %liSave, li
+    store %beSave, be
+    store %bSave, b
+    store %cSave, c
+    store %nSave, n
+    store %oSave, o
 
     pop li
 
@@ -14,13 +27,13 @@ loader:
 
     pop h
 
-    mov o, 800000
+    mov o, %loadProgramidx
 
     loadf $h, $o, h, 0
 
     jl h, loaderError
     
-    load 800000, h
+    load %loadProgramidx, h
 
     sub h, 3301
     jnz h, invalidFormat_loader
@@ -36,7 +49,7 @@ loader:
     mov o , 0
     ; -----
     
-    call 800004 ; Call the program
+    call %loadProgramcallidx ; Call the program
 
     jmp loaderOkay
 
@@ -58,14 +71,14 @@ loader:
         load 999997, li
         push $li
 
-        load 999965, h
-        load 999969, he
-        load 999973, li
-        load 999977, be
-        load 999981, b
-        load 999985, c
-        load 999989, n
-        load 999993, o
+		load %hSave, h
+		load %heSave, he
+		load %liSave, li
+		load %beSave, be
+		load %bSave, b
+		load %cSave, c
+		load %nSave, n
+		load %oSave, o
 
 ret
 
