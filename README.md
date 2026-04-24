@@ -119,11 +119,18 @@ If the kernel hits a limit, it triggers a `kernelPanic`, saving the code to addr
 To allow external programs to call Kernel functions without hardcoding internal addresses, SysDOS uses a **Jump Table** starting at `65,536`. Each entry is a 5-byte `JMP <address>` instruction.
 
 **Standard Table Indices:**
-1. `65,536`: `KALLOC`
-2. `65,541`: `KFREE`
-3. `65,546`: `PUTSTR`
-4. `65,551`: `STRCMP`
-5. `65,556`: `STACKCPY`
+
+
+| Name         | Index    |
+| ------------ | -------- |
+| **Kalloc**   | `65,536` |
+| **Kfree**    | `65,541` |
+| **Putstr**   | `65,546` |
+| **Strcmp**   | `65,551` |
+| **Stackcpy** | `65,556` |
+| **Strlen**   | `65,561` |
+| **Mul**      | `65,566` |
+| **Div**      | `65,571` |
 
 ---
 

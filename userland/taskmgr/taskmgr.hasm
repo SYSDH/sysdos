@@ -3,6 +3,7 @@
 #include "lib/hiolib.hasm"
 #include "lib/math.hasm"
 #include "macros.hasm"
+#include "../sysdos/sysdos.hasm"
 
 showRegs:
     %macro showreg {
@@ -17,57 +18,48 @@ showRegs:
         out 10, 1
     }
 
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 104, 1
     out 32, 1
     %showreg h
 
 
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 104, 1
     out 101, 1
     %showreg he
 
 
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 108, 1
     out 105, 1
     %showreg li
 
 
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 98, 1
     out 101, 1
     %showreg be
 
 
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 98, 1
     out 32, 1
     %showreg b
 
 
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 99, 1
     out 32, 1
     %showreg c
 
 
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 110, 1
     out 32, 1
     %showreg n
 
-
-    push regmsg
-    call putstr
+    %putstr regmsg
     out 111, 1
     out 32, 1
     %showreg o
@@ -125,21 +117,10 @@ _main:
 
     sub h, 70000
 
-    push $h
-    push 100
-
-    call mul
-    pop o
-
-    push $o
-    push 730000
-
-    call div
-
-    pop o
+    %mul $h 100 o
+    %div $o 730000 o
     
-    push rammsg
-    call putstr
+    %putstr rammsg
 
     %COLOR_BLUE ; Set color blue
     out $h, 0 ; Heap

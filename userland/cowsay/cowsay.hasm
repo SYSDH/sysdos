@@ -2,7 +2,7 @@
 
 .entry _start
 
-#include "minilib/string.hasm"
+#include "../sysdos/sysdos.hasm"
 
 %macro inputcpy 870000
 
@@ -31,12 +31,9 @@ ret
 
 drawBubble:
     in
-    push %inputcpy
-    call stackcpy
+    %stackcpy %inputcpy
 
-    push %inputcpy
-    call strlen
-    pop o
+    %strlen %inputcpy o
 
     add o, 2
 
@@ -48,8 +45,7 @@ drawBubble:
 
     out 60, 1
     out 32, 1
-    push %inputcpy
-    call putstr
+    %putstr %inputcpy
     out 32, 1
     out 62, 1
     out 10, 1
@@ -62,8 +58,7 @@ ret
 _start:
     call drawBubble
 
-    push cow
-    call putstr
+    %putstr cow
 
     out 10, 1
 

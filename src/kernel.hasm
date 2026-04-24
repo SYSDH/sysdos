@@ -20,6 +20,8 @@
 ; 69.996 = ErrorCode    (32-bit)
 ; -------------------------------------------------------------------
 
+#include "lib/math.hasm"
+
 %macro heapPtr 69992
 %macro errorcode 69996
 
@@ -76,6 +78,24 @@ initKern:
     store 65556, c
     mov c, stackcpy
     store 65557, c
+
+    ; Strlen
+    mov c, %JMP_OPCODE
+    store 65561, c
+    mov c, strlen
+    store 65562, c
+
+    ; Mul
+    mov c, %JMP_OPCODE
+    store 65566, c
+    mov c, mul
+    store 65567, c
+
+    ; Div
+    mov c, %JMP_OPCODE
+    store 65571, c
+    mov c, div
+    store 65572, c
 ret
 
 kalloc:
