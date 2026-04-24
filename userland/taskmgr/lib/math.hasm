@@ -1,0 +1,62 @@
+div:
+    store 840008, li
+    store 840012, h
+    store 840016, he
+    store 840020, o
+
+    pop li
+    pop he
+    pop h
+
+    mov o, 0
+
+__divloop__:
+    sub h, he
+    jl  h, __divend__
+    add h, he
+
+    sub h, he
+    add o, 1
+
+    jmp __divloop__
+
+__divend__:
+    push $o
+    push $li
+
+    load 840008, li
+    load 840012, h
+    load 840016, he
+    load 840020, o
+ret
+
+mul:
+    store 840008, li
+    store 840012, h
+    store 840016, o
+    store 840020, n
+    
+    pop li
+    pop o
+    pop h
+
+    mov n, 0
+
+    __mulloop__:
+        jz o, __mulend__
+
+        add n, h
+        sub o, 1
+        
+        jmp __mulloop__
+
+    __mulend__:
+        push $n
+        push $li
+
+        load 840008, li
+        load 840012, h
+        load 840016, o
+        load 840020, n
+
+ret

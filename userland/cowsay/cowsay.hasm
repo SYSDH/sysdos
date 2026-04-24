@@ -1,0 +1,79 @@
+.org 800000
+
+.entry _start
+
+#include "minilib/string.hasm"
+
+%macro inputcpy 870000
+
+drawDash:
+    store 840008, li
+    store 840012, he
+
+    pop he
+    pop li
+
+    drawDashLoop:
+        jz li, enddashloop
+
+        sub li, 1
+        out 45, 1
+
+        jmp drawDashLoop
+
+    enddashloop:
+        push $he
+
+        load 840008, li
+        load 840012, he
+
+ret
+
+drawBubble:
+    in
+    push %inputcpy
+    call stackcpy
+
+    push %inputcpy
+    call strlen
+    pop o
+
+    add o, 2
+
+    out 32, 1
+    push $o
+    call drawDash
+    
+    out 10, 1
+
+    out 60, 1
+    out 32, 1
+    push %inputcpy
+    call putstr
+    out 32, 1
+    out 62, 1
+    out 10, 1
+
+    out 32, 1
+    push $o
+    call drawDash
+ret
+
+_start:
+    call drawBubble
+
+    push cow
+    call putstr
+
+    out 10, 1
+
+    ret
+
+.data
+    cow: db "
+        \\   ^__^
+         \\  (oo)\\_______
+            (__)\       )\\/\
+                ||----w |
+                ||     ||
+    "

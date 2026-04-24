@@ -1,0 +1,178 @@
+.org 800000
+
+#include "lib/hiolib.hasm"
+#include "lib/math.hasm"
+#include "macros.hasm"
+
+showRegs:
+    %macro showreg {
+        out 32, 1
+        out 91, 1
+        out 32, 1
+        %COLOR_BLUE
+        out $%0, 0
+        %RESET_COLOR
+        out 32, 1
+        out 93, 1
+        out 10, 1
+    }
+
+    push regmsg
+    call putstr
+    out 104, 1
+    out 32, 1
+    %showreg h
+
+
+    push regmsg
+    call putstr
+    out 104, 1
+    out 101, 1
+    %showreg he
+
+
+    push regmsg
+    call putstr
+    out 108, 1
+    out 105, 1
+    %showreg li
+
+
+    push regmsg
+    call putstr
+    out 98, 1
+    out 101, 1
+    %showreg be
+
+
+    push regmsg
+    call putstr
+    out 98, 1
+    out 32, 1
+    %showreg b
+
+
+    push regmsg
+    call putstr
+    out 99, 1
+    out 32, 1
+    %showreg c
+
+
+    push regmsg
+    call putstr
+    out 110, 1
+    out 32, 1
+    %showreg n
+
+
+    push regmsg
+    call putstr
+    out 111, 1
+    out 32, 1
+    %showreg o
+ret
+
+checkSeverity:
+    pop n
+    pop he
+
+    sub he, 10
+    jle he, okay
+    add he, 10
+
+    sub he, 30
+    jle he, warning
+    add he, 30
+
+    sub he, 75
+    jle he, alert
+    add he, 75
+
+    jmp critical
+
+    okay:
+        %COLOR_GREEN
+        jmp end
+
+    warning:
+        %COLOR_YELLOW
+        jmp end
+    
+    alert:
+        %COLOR_ORANGE
+        jmp end
+
+    critical:
+        %COLOR_RED
+        jmp end
+    
+    end:
+        push $n
+ret
+
+_main:
+    load %hSave, h
+    load %heSave, he
+    load %liSave, li
+    load %beSave, be
+    load %bSave, b
+    load %cSave, c
+    load %nSave, n
+    load %oSave, o
+
+    call showRegs
+
+    sub h, 70000
+
+    push $h
+    push 100
+
+    call mul
+    pop o
+
+    push $o
+    push 730000
+
+    call div
+
+    pop o
+    
+    push rammsg
+    call putstr
+
+    %COLOR_BLUE ; Set color blue
+    out $h, 0 ; Heap
+    out 66, 1 ; Unit (B/Bytes)
+    %RESET_COLOR ; Reset color
+
+    out 32, 1 ; Space
+    out 47, 1 ; Separator
+
+    out 32, 1
+    %COLOR_BLUE ; Set color blue
+    out 800000, 0 ; Limit
+    
+    out 66, 1 ; Unit (B/bytes)
+    %RESET_COLOR ; Reset color
+    out 32, 1 ; Space
+    
+    out 40, 1 ; (
+
+    ; Set color
+    push $o
+    call checkSeverity
+    ; --
+
+    out $o, 0
+    out 37, 1; %
+
+    %RESET_COLOR ; Reset color
+    out 41, 1 ; )
+
+    out 10, 1 ; \n
+    ret
+
+.data
+    regmsg: db "REG "
+    rammsg: db "Memory: "
