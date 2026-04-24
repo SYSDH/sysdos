@@ -2,8 +2,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/language-HASM-orange?cacheSeconds=300" alt="HASM">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/sysdh/sysdos?cacheSeconds=300" alt="License"></a>
-  <img src="https://img.shields.io/github/stars/sysdh/sysdos?cacheSeconds=300" alt="GitHub stars">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/SYSDH/sysdos?cacheSeconds=300" alt="License"></a>
+  <img src="https://img.shields.io/github/stars/SYSDH/sysdos?cacheSeconds=300" alt="GitHub stars">
 </p>
 
 <br>
