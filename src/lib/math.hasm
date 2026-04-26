@@ -92,3 +92,29 @@ mul:
         load 66013, n
 
 ret
+
+rand:
+    store 66017, li
+    store 66021, h
+    store 66025, o
+    store 66029, n
+
+    pop li
+    pop n
+    
+    push $n
+    push 3301
+    call mul
+    pop n
+
+    add n, 1234567
+
+    push $n
+
+    push $li
+
+    load 66017, li
+    load 66021, h
+    load 66025, o
+    load 66029, n
+ret

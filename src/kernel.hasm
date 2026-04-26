@@ -96,6 +96,18 @@ initKern:
     store 65571, c
     mov c, div
     store 65572, c
+
+    ; Rand
+    mov c, %JMP_OPCODE
+    store 65576, c
+    mov c, rand
+    store 65577, c
+
+    ; Atoi
+    mov c, %JMP_OPCODE
+    store 65581, c
+    mov c, atoi
+    store 65582, c
 ret
 
 kalloc:

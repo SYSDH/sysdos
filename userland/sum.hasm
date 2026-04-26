@@ -1,0 +1,40 @@
+.org 800000
+
+#include "sysdos/sysdos.hasm"
+
+%macro inputcpy 870000
+%macro space out 32, 1
+
+_main:
+    %putstr prompt1
+    in
+    %stackcpy %inputcpy
+
+    %atoi %inputcpy h
+
+    %putstr prompt2
+    in
+    %stackcpy %inputcpy
+
+    %atoi %inputcpy he
+
+    %putstr result
+
+    out $h, 0
+    %space
+    out 43, 1
+    %space
+    out $he, 0
+
+    %putstr resultcomplete
+    add h, he
+    out $h, 0
+
+    out 10, 1
+ret
+
+.data
+    prompt1: db "Enter a number: "
+    prompt2: db "Enter another number: "
+    result: db "The result of ("
+    resultcomplete: db ") is "

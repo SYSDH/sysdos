@@ -9,6 +9,8 @@
 %macro __SYSCALL_STRLEN__IDX__     65561
 %macro __SYSCALL_MUL__IDX__        65566
 %macro __SYSCALL_DIV__IDX__        65571
+%macro __SYSCALL_RAND__IDX__       65576
+%macro __SYSCALL_ATOI__IDX__       65581
 
 %macro kalloc {
     push %0
@@ -57,3 +59,49 @@
     call %__SYSCALL_DIV__IDX__
     pop %2
 }
+
+%macro rand {
+    push %0
+    push %1
+    call %__SYSCALL_RAND__IDX__
+}
+
+%macro atoi {
+    push %0
+    call %__SYSCALL_ATOI__IDX__
+    pop %1
+}
+
+%macro sleep {
+    push %0
+    call sysdos__sleep_func__
+}
+
+sysdos__sleep_func__:
+    store 840008, h
+    store 840012, li
+    store 840016, c
+
+    pop li
+    pop h
+    
+    mov c, 28003301
+
+    ; Calc seconds
+    %mul $h $c c
+
+    sysdos__sleep_loop__:
+        sub c, 1
+
+        jle c, sysdos__sleep_end__
+
+        jmp sysdos__sleep_loop__
+
+    sysdos__sleep_end__:
+        push $li
+
+        load 840008, h
+        load 840012, li
+        load 840016, c
+
+ret

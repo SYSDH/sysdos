@@ -151,3 +151,42 @@ strbuild:
         load 66312, be
         load 66316, c
 ret
+
+atoi:
+    store 66017, li
+    store 66021, h
+    store 66025, c
+    store 66029, he
+
+    pop li
+    pop c
+
+    mov h, 0
+
+    __atoi__loop__:
+        load $c, he
+        jz he, __atoi__loop__end
+        
+        sub he, 48
+
+        push $h
+        push 10
+        call mul
+        pop h
+
+        add h, he
+
+        add c, 4
+
+        jmp __atoi__loop__
+
+
+    __atoi__loop__end:
+        push $h
+        push $li
+
+        load 66017, li
+        load 66021, h
+        load 66025, c
+        load 66029, he
+ret
